@@ -193,13 +193,13 @@
             $("#democsv-plot-modal-select-y").html(selectText(data["dataNames"]))
             $(".democsv-cls").show()
           }
-
           $("#democsv-error").show()
         }
     })
   })
 
   $("#democsv-plot-modal-plt").click(function(){
+    $("#democsv-plot-modal-plt").attr("disabled", "disabled")
     input_x = $("#democsv-plot-modal-select-x").val()
     input_y = $("#democsv-plot-modal-select-y").val()
 
@@ -213,12 +213,12 @@
       if (data["status"] == 200){
         $("#democsv-img").attr("src",data["imgurl"])
         $("#democsv-plot-modal-save").attr("href", data["imgurl"])
-
         $("#democsv-plot-modal-save").show()
         $("#democsv-img").show()
       }else{
         console.log(data)
       }
+      $("#democsv-plot-modal-plt").removeAttr("disabled")
     })
   })
 </script>

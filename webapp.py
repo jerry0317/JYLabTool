@@ -3,6 +3,7 @@ from flask import Flask, url_for, render_template, request, Response, json, send
 import os
 import JYL.methods.filem as jflm
 import JYL.plot as jplt
+import time
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from io import StringIO
@@ -40,7 +41,7 @@ def api_post(para):
             returndic["msg"] = "Failed to process. Error message: {}".format(e)
         else:
             returndic["status"] = 200
-            returndic["imgurl"] = "/img/twoWP-{0}vs{1}.png".format(xName, yName)
+            returndic["imgurl"] = "/img/twoWP-{0}vs{1}-{2}.png".format(xName, yName, int(time.time()))
     elif para == "democsv-alldata":
         returndic["dataNames"] = list(dataset.dataNames)
         returndic["length"] = dataset.length
@@ -51,8 +52,8 @@ def api_post(para):
 
     return json.dumps(returndic)
 
-@app.route("/img/twoWP-<x>vs<y>.png")
-def render_twoWP_png(x,y):
+@app.route("/img/twoWP-<x>vs<y>-<timestamp>.png")
+def render_twoWP_png(x,y,timestamp):
     global dataset
     try:
         fig, output = jplt.twoWayPlot(dataset, x, y, httpimg=True, show=False)
