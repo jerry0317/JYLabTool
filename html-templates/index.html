@@ -32,9 +32,13 @@
           <button type="button" class="btn btn-primary " id="democsv-btn-plot">Generate Plot</button>
           <button type="button" class="btn btn-secondary " id="democsv-btn-data">View Data</button>
         </div>
-
         </div>
       </div>
+    </div>
+  </div>
+  <div class="card border-secondary mb-3">
+    <div class="card-body">
+       <a href="/file/example.csv" download>Download an example CSV file</a>
     </div>
   </div>
 </div>
@@ -65,11 +69,11 @@
 
           <button class="btn btn-primary btn-block" id="democsv-plot-modal-plt">Plot</button>
 
-        <img id="democsv-img" class="w-100 h-100 democsv-cls" />
+        <img id="democsv-img" class="w-100 h-100 democsv-cls2" />
       </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      <a role="button" class="btn btn-primary text-white" id="democsv-plot-modal-save" style="display:none;" download>Save image</a>
+      <a role="button" class="btn btn-primary text-white democsv-cls2" id="democsv-plot-modal-save" style="display:none;" download>Save image</a>
     </div>
   </div>
 </div>
@@ -85,7 +89,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <table class="table democsv-cls" id="democsv-data-modal-table">
+        <table class="table democsv-cls democsv-cls2" id="democsv-data-modal-table">
 
         </table>
       </div>
@@ -152,8 +156,8 @@
 
   $("#democsv-up").on('change', function() {
     $("#democsv-error").hide()
-    $("#democsv-img").hide()
     $(".democsv-cls").hide()
+    $(".democsv-cls2").hide()
     $.ajax({
         url: '/api/democsv',
         type: 'POST',

@@ -61,5 +61,9 @@ def render_twoWP_png(x,y):
     except Exception as e:
         return send_file("img_error.png", mimetype='image/png')
 
+@app.route("/file/example.csv")
+def example_csv():
+    return send_file("sT.csv", mimetype='text/csv')
+
 if __name__ == "__main__":
     app.run(port=5000)
