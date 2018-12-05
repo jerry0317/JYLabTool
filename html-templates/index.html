@@ -2,24 +2,97 @@
 
 {% block title %}JYLabTool - Homepage{% endblock %}
 
+{% block upperstyle %}
+  <style>
+    .democsv-cls{
+      display:none;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
 
 <div class="col-lg-8 col-md-10 col-sm-11 col-xs-12" style="margin-top:25pt; margin-bottom:25pt;margin-left:auto;margin-right:auto;position:relative;">
   <div class="card border-primary mb-3">
     <div class="card-header bg-primary text-white">A QUICK DEMO</div>
     <div class="card-body">
-      <b class="mb-2 card-text">Choose a per ruled CSV file.</b>
+      <b class="mb-2 card-text">Choose a valid CSV file.</b>
       <div class="input-group">
-  <div class="custom-file col-6 mb-2 mt-3">
-    <form enctype="multipart/form-data" id="democsv-form">
-    <input type="file" name="democsv-file" class="custom-file-input" id="democsv-up" aria-describedby="inputGroupFileAddon01" accept=".csv">
-    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
-    </form>
-    <progress></progress>
+        <div class="custom-file col-6 mb-2 mt-3">
+          <form enctype="multipart/form-data" id="democsv-form">
+            <input type="file" name="democsv-file" class="custom-file-input" id="democsv-up" aria-describedby="inputGroupFileAddon01" accept=".csv">
+            <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+          </form>
+          <progress></progress>
+        </div>
+        <code class="mb-2 card-text text-secondary w-100 democsv-cls" id="democsv-error" ></code>
+        <div class="democsv-cls w-100">
+
+        <div class="btn-group  w-100 justify-content-md-center mt-3" id="democsv-btngrp" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-primary " id="democsv-btn-plot">Generate Plot</button>
+          <button type="button" class="btn btn-secondary " id="democsv-btn-data">View Data</button>
+        </div>
+
+        </div>
+      </div>
+    </div>
   </div>
-  <p class="mb-2 card-text text-secondary w-100" id="democsv-error" style="display:none;"></p>
-  <img id="democsv-img" class="w-100 h-100" style="display:none;" />
 </div>
+
+<div class="modal fade " id="democsv-plot-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Generate Plot</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <b>Choose the data you want to plot: </b>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputState">Horizontal Axis</label>
+            <select id="democsv-plot-modal-select-x" class="form-control">
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="inputState">Vertical Axis</label>
+            <select id="democsv-plot-modal-select-y" class="form-control">
+            </select>
+          </div>
+        </div>
+
+          <button class="btn btn-primary btn-block" id="democsv-plot-modal-plt">Plot</button>
+
+        <img id="democsv-img" class="w-100 h-100 democsv-cls" />
+      </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <a role="button" class="btn btn-primary text-white" id="democsv-plot-modal-save" style="display:none;" download>Save image</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade " id="democsv-data-modal" tabindex="-2" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">View Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table democsv-cls" id="democsv-data-modal-table">
+
+        </table>
+      </div>
+      <!-- <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary" class="democsv-plot-modal-save">Save changes</button>
+    </div> -->
     </div>
   </div>
 </div>
@@ -28,9 +101,59 @@
 
 {% block bottomJS %}
 <script>
+
+  $("#democsv-btn-plot").click(function(){
+    $("#democsv-plot-modal").modal('show')
+  })
+
+  function selectText(names){
+    len = names.length
+    str = "<option value='" + names[0] + "' selected>" + names[0] + "</option>"
+    for (i=1;i<len;i++){
+      str += "<option value='" + names[i] + "'>" + names[i] + "</option>"
+    }
+    return str
+  }
+
+  function tableText(names, data){
+    len = data.length
+    str = "<thead><tr>"
+    for (let name of names){
+      str += "<th scope='col'>" + name +"</th>"
+    }
+    str +="</tr></thead><tbody>"
+    for (i=0;i<len;i++){
+      str += "<tr>"
+        for (let name of names){
+
+            console.log(data[i])
+          str += "<td>" + data[i][name]["value"] + " (&#xb1;" + data[i][name]["uncertainty"] + ") " + data[i][name]["unit"] + "</td>"
+        }
+        str += "</tr>"
+    }
+    str +="</tbody>"
+    return str
+  }
+
+  $("#democsv-btn-data").click(function(){
+    $.post("/api/democsv-alldata",
+    {},
+    function(data) {
+      data = JSON.parse(data)
+      if (data["status"] == 200){
+        $("#democsv-data-modal-table").html(tableText(data["dataNames"], data["allData"])).show()
+        $("#democsv-data-modal").modal('show')
+      }else{
+        console.log(data)
+      }
+    })
+
+  })
+
   $("#democsv-up").on('change', function() {
     $("#democsv-error").hide()
     $("#democsv-img").hide()
+    $(".democsv-cls").hide()
     $.ajax({
         url: '/api/democsv',
         type: 'POST',
@@ -58,15 +181,40 @@
 
         success: function(data) {
           data = JSON.parse(data)
-          console.log(data)
           if (data["status"] != 200) {
             $("#democsv-error").html(data["msg"])
-            $("#democsv-error").show()
           }else if (data["status"] == 200){
-            $("#democsv-img").attr("src",data["imgurl"])
-            $("#democsv-img").show()
+            $("#democsv-error").html("The data set has been sucessfully loaded.")
+            $("#democsv-plot-modal-select-x").html(selectText(data["dataNames"]))
+            $("#democsv-plot-modal-select-y").html(selectText(data["dataNames"]))
+            $(".democsv-cls").show()
           }
+
+          $("#democsv-error").show()
         }
+    })
+  })
+
+  $("#democsv-plot-modal-plt").click(function(){
+    input_x = $("#democsv-plot-modal-select-x").val()
+    input_y = $("#democsv-plot-modal-select-y").val()
+
+    $.post("/api/democsv-twplot",
+    {
+      "xName": input_x,
+      "yName": input_y
+    },
+    function(data) {
+      data = JSON.parse(data)
+      if (data["status"] == 200){
+        $("#democsv-img").attr("src",data["imgurl"])
+        $("#democsv-plot-modal-save").attr("href", data["imgurl"])
+
+        $("#democsv-plot-modal-save").show()
+        $("#democsv-img").show()
+      }else{
+        console.log(data)
+      }
     })
   })
 </script>

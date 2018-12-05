@@ -21,8 +21,8 @@ def render_index():
 @app.route("/api/<para>", methods=['POST'])
 def api_post(para):
     global dataset
+    returndic = {}
     if para == "democsv":
-        returndic = {}
         try:
             dataset = jflm.openFromCSV(file=StringIO(request.files['democsv-file'].stream.read().decode("UTF8"), newline=None))
         except Exception as e:
@@ -30,16 +30,31 @@ def api_post(para):
             returndic["msg"] = "Failed to read the csv file. Error message: {}".format(e)
         else:
             returndic["status"] = 200
-            returndic["imgurl"] = "/img/twoWP.png"
-        return json.dumps(returndic)
+            returndic["dataNames"] = list(dataset.dataNames)
+    elif para == "democsv-twplot":
+        try:
+            xName = request.form['xName']
+            yName = request.form['yName']
+        except Exception as e:
+            returndic["status"] = 400
+            returndic["msg"] = "Failed to process. Error message: {}".format(e)
+        else:
+            returndic["status"] = 200
+            returndic["imgurl"] = "/img/twoWP-{0}vs{1}.png".format(xName, yName)
+    elif para == "democsv-alldata":
+        returndic["dataNames"] = list(dataset.dataNames)
+        returndic["length"] = dataset.length
+        returndic["allData"] = dataset.acsList
+        returndic["status"] = 200
     else:
-        return "BAD"
+        returndic["msg"] = "BAD"
 
-@app.route("/img/twoWP.png")
-def render_twoWP_png():
+    return json.dumps(returndic)
+
+@app.route("/img/twoWP-<x>vs<y>.png")
+def render_twoWP_png(x,y):
     global dataset
-    names = list(dataset.dataNames)
-    fig, output = jplt.twoWayPlot(dataset, names[0], names[1], httpimg=True, show=False)
+    fig, output = jplt.twoWayPlot(dataset, x, y, httpimg=True, show=False)
 
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')

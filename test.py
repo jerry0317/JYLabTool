@@ -33,7 +33,8 @@ for i in range(0,10):
 # print([(dp.valueDict["x"], dp.valueDict["y"]) for dp in s.dataPoints])
 
 # jplt.twoWayPlot(s, "x", "y")
+print(s.acsList)
 
-s2 = jflm.openFromCSV(path="sT.csv")
-# print([(dp.valueDict["x"], dp.valueDict["y"]) for dp in s2.dataPoints])
-jplt.twoWayPlot(s2, "x", "y")
+# s2 = jflm.openFromCSV(path="sT.csv")
+# # print([(dp.valueDict["x"], dp.valueDict["y"]) for dp in s2.dataPoints])
+# jplt.twoWayPlot(s2, "x", "y")

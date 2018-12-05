@@ -38,3 +38,24 @@ class JYLDataSet(object):
         for n in self.dataNames:
             dic[n] = [dp.uncertaintyDict[n] for dp in self.dataPoints]
         return dic
+
+    @property
+    def units(self):
+        dic = {}
+        for n in self.dataNames:
+            dic[n] = [dp.unitDict[n] for dp in self.dataPoints]
+        return dic
+
+    @property
+    def acsList(self):
+        bl = []
+        for dp in self.dataPoints:
+            dic = {}
+            for d in dp.data:
+                dic[d.name] = {"value": d.value, "uncertainty": d.uncertainty, "unit": d.unit}
+            bl.append(dic)
+        return bl
+
+    @property
+    def length(self):
+        return len(self.dataPoints)
