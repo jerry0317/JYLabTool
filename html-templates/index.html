@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}JYLabTool - Homepage{% endblock %}
+
+{% block content %}
+
+<div class="col-lg-8 col-md-10 col-sm-11 col-xs-12" style="margin-top:25pt; margin-bottom:25pt;margin-left:auto;margin-right:auto;position:relative;">
+  <div class="card border-primary mb-3">
+    <div class="card-header bg-primary text-white">A QUICK DEMO</div>
+    <div class="card-body">
+      <b class="mb-2 card-text">Choose a per ruled CSV file.</b>
+      <div class="input-group">
+  <div class="custom-file col-6 mb-2 mt-3">
+    <form enctype="multipart/form-data" id="democsv-form">
+    <input type="file" name="democsv-file" class="custom-file-input" id="democsv-up" aria-describedby="inputGroupFileAddon01" accept=".csv">
+    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+    </form>
+    <progress></progress>
+  </div>
+  <p class="mb-2 card-text text-secondary w-100" id="democsv-error" style="display:none;"></p>
+  <img id="democsv-img" class="w-100 h-100" style="display:none;" />
+</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block bottomJS %}
+<script>
+  $("#democsv-up").on('change', function() {
+    $("#democsv-error").hide()
+    $("#democsv-img").hide()
+    $.ajax({
+        url: '/api/democsv',
+        type: 'POST',
+
+        data: new FormData($('#democsv-form')[0]),
+
+        cache: false,
+        contentType: false,
+        processData: false,
+
+        xhr: function() {
+            var myXhr = $.ajaxSettings.xhr()
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        $('progress').attr({
+                            value: e.loaded,
+                            max: e.total,
+                        })
+                    }
+                } , false)
+            }
+            return myXhr
+        },
+
+        success: function(data) {
+          data = JSON.parse(data)
+          console.log(data)
+          if (data["status"] != 200) {
+            $("#democsv-error").html(data["msg"])
+            $("#democsv-error").show()
+          }else if (data["status"] == 200){
+            $("#democsv-img").attr("src",data["imgurl"])
+            $("#democsv-img").show()
+          }
+        }
+    })
+  })
+</script>
+
+{% endblock %}
