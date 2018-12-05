@@ -1,5 +1,5 @@
 import JYL
-from flask import Flask, url_for, render_template, request, Response, json
+from flask import Flask, url_for, render_template, request, Response, json, send_file
 import os
 import JYL.methods.filem as jflm
 import JYL.plot as jplt
@@ -54,10 +54,12 @@ def api_post(para):
 @app.route("/img/twoWP-<x>vs<y>.png")
 def render_twoWP_png(x,y):
     global dataset
-    fig, output = jplt.twoWayPlot(dataset, x, y, httpimg=True, show=False)
-
-    FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
+    try:
+        fig, output = jplt.twoWayPlot(dataset, x, y, httpimg=True, show=False)
+        FigureCanvas(fig).print_png(output)
+        return Response(output.getvalue(), mimetype='image/png')
+    except Exception as e:
+        return send_file("img_error.png", mimetype='image/png')
 
 if __name__ == "__main__":
     app.run(port=5000)
