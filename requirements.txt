@@ -5,7 +5,6 @@ MarkupSafe==1.0
 Werkzeug==0.14.1
 gunicorn==19.9.0
 wheel==0.24.0
-requests==2.19.1
 matplotlib==3.0.1
 numpy==1.15.3
 scipy==1.1.0
