@@ -60,6 +60,7 @@ def render_twoWP_png(x,y,timestamp):
         FigureCanvas(fig).print_png(output)
         return Response(output.getvalue(), mimetype='image/png')
     except Exception as e:
+        print(e)
         return send_file("img_error.png", mimetype='image/png')
 
 @app.route("/file/example.csv")
@@ -68,3 +69,5 @@ def example_csv():
 
 if __name__ == "__main__":
     app.run(port=5000)
+
+# # TODO: User Sessions
